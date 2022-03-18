@@ -1041,6 +1041,19 @@ namespace ILCompiler
             {
                 throw new NotSupportedException(); // Unreachable
             }
+            catch (BadImageFormatException ex)
+            {
+                if (File.Exists(ex.FileName))
+                {
+                    string uploadRoot = Environment.GetEnvironmentVariable("HELIX_WORKITEM_UPLOAD_ROOT");
+                    string targetPath = Path.Combine(uploadRoot, Path.GetFileName(ex.FileName));
+                    File.Copy(ex.FileName, targetPath);
+                    Console.Error.WriteLine("File size: {0}", new FileInfo(ex.FileName).Length);
+                    Console.Error.WriteLine("Upload root: {0}", uploadRoot);
+                }
+                Console.Error.WriteLine("Bad image format: {0}", ex.FileName);
+                throw;
+            }
 #else
             try
             {
