@@ -18,8 +18,17 @@ jobs:
     - windows_x86
     - windows_x64
     jobParameters:
-      isOfficialBuild: false
-      liveRuntimeBuildConfig: Release
+      testGroup: outerloop
+
+- template: /eng/pipelines/common/platform-matrix.yml
+  parameters:
+    jobTemplate: /eng/pipelines/coreclr/templates/build-job.yml
+    buildConfig: Release
+    platforms:
+    - windows_x86
+    - windows_x64
+    jobParameters:
+      testGroup: outerloop
 
 - template: /eng/pipelines/common/platform-matrix.yml
   parameters:
