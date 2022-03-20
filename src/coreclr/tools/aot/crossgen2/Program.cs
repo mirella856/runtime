@@ -1032,20 +1032,16 @@ namespace ILCompiler
 
         private static int Main(string[] args)
         {
-#if DEBUG
             try
             {
                 return new Program().Run(args);
             }
+#if DEBUG
             catch (CodeGenerationFailedException ex) when (DumpReproArguments(ex))
             {
                 throw new NotSupportedException(); // Unreachable
             }
-#else
-            try
-            {
-                return new Program().Run(args);
-            }
+#endif
             catch (BadImageFormatException ex)
             {
                 Console.Error.WriteLine("Bad image format: {0}", ex.FileName);
@@ -1056,7 +1052,10 @@ namespace ILCompiler
                     Console.Error.WriteLine("File size:   {0}", new FileInfo(ex.FileName).Length);
                     Console.Error.WriteLine("Upload root: {0}", uploadRoot);
                     Console.Error.WriteLine("Target path: {0}", targetPath);
-                    File.Copy(ex.FileName, targetPath);
+                    if (!File.Exists(targetPath))
+                    {
+                        File.Copy(ex.FileName, targetPath, overwrite: true);
+                    }
                 }
                 else
                 {
@@ -1070,8 +1069,6 @@ namespace ILCompiler
                 Console.Error.WriteLine(e.ToString());
                 return 1;
             }
-#endif
-
         }
     }
 }
