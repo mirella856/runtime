@@ -1051,10 +1051,11 @@ namespace ILCompiler
                 Console.Error.WriteLine("Bad image format: {0}", ex.FileName);
                 if (File.Exists(ex.FileName))
                 {
+                    string uploadRoot = Environment.GetEnvironmentVariable("__CrashDumpFolder");
+                    string targetPath = Path.Combine(uploadRoot, Path.GetFileName(ex.FileName));
                     Console.Error.WriteLine("File size:   {0}", new FileInfo(ex.FileName).Length);
                     Console.Error.WriteLine("Upload root: {0}", uploadRoot);
-                    string uploadRoot = Environment.GetEnvironmentVariable("HELIX_WORKITEM_UPLOAD_ROOT");
-                    string targetPath = Path.Combine(uploadRoot, Path.GetFileName(ex.FileName));
+                    Console.Error.WriteLine("Target path: {0}", targetPath);
                     File.Copy(ex.FileName, targetPath);
                 }
                 else
