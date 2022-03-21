@@ -6,6 +6,7 @@ using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
+using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
@@ -1045,7 +1046,10 @@ namespace ILCompiler
             catch (BadImageFormatException ex)
             {
                 Console.Error.WriteLine("Bad image format: {0}", ex.FileName);
-                if (File.Exists(ex.FileName))
+                string thisFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                Console.Error.WriteLine("This folder:      {0}", thisFolder);
+                string filePath = Path.Combine(thisFolder, ex.FileName);
+                if (File.Exists(filePath))
                 {
                     string uploadRoot = Environment.GetEnvironmentVariable("__CrashDumpFolder");
                     string targetPath = Path.Combine(uploadRoot, Path.GetFileName(ex.FileName));
@@ -1054,7 +1058,7 @@ namespace ILCompiler
                     Console.Error.WriteLine("Target path: {0}", targetPath);
                     if (!File.Exists(targetPath))
                     {
-                        File.Copy(ex.FileName, targetPath, overwrite: true);
+                        File.Copy(filePath, targetPath, overwrite: true);
                     }
                 }
                 else
